@@ -29,7 +29,7 @@ public class HifumiPlayer {
 			try file.read(into: buffer, frameCount: preFrameCount)
 			self.node.scheduleBuffer(buffer, at: nil, options: .interrupts, completionHandler: nil)
 			self.preBuffer = buffer
-			file.framePosition = AVAudioFramePosition(loopRange.upperBound)
+			file.framePosition = AVAudioFramePosition(preFrameCount)
 			
 		} else {
 			self.preBuffer = nil
