@@ -10,6 +10,7 @@
 		16A9E3551E65AB4E00A53585 /* Hifumi.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 16A9E34B1E65AB4E00A53585 /* Hifumi.framework */; };
 		16A9E35A1E65AB4E00A53585 /* HifumiTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16A9E3591E65AB4E00A53585 /* HifumiTests.swift */; };
 		16A9E35C1E65AB4E00A53585 /* Hifumi.h in Headers */ = {isa = PBXBuildFile; fileRef = 16A9E34E1E65AB4E00A53585 /* Hifumi.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		16A9E3661E65AB9000A53585 /* HifumiPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16A9E3651E65AB9000A53585 /* HifumiPlayer.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -29,6 +30,7 @@
 		16A9E3541E65AB4E00A53585 /* HifumiTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HifumiTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		16A9E3591E65AB4E00A53585 /* HifumiTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HifumiTests.swift; sourceTree = "<group>"; };
 		16A9E35B1E65AB4E00A53585 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		16A9E3651E65AB9000A53585 /* HifumiPlayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HifumiPlayer.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -73,6 +75,7 @@
 			children = (
 				16A9E34E1E65AB4E00A53585 /* Hifumi.h */,
 				16A9E34F1E65AB4E00A53585 /* Info.plist */,
+				16A9E3651E65AB9000A53585 /* HifumiPlayer.swift */,
 			);
 			path = Hifumi;
 			sourceTree = "<group>";
@@ -149,6 +152,7 @@
 					16A9E34A1E65AB4E00A53585 = {
 						CreatedOnToolsVersion = 8.2.1;
 						DevelopmentTeam = KC8N9BMQJY;
+						LastSwiftMigration = 0820;
 						ProvisioningStyle = Automatic;
 					};
 					16A9E3531E65AB4E00A53585 = {
@@ -198,6 +202,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				16A9E3661E65AB9000A53585 /* HifumiPlayer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -322,6 +327,7 @@
 		16A9E3601E65AB4E00A53585 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = KC8N9BMQJY;
@@ -330,10 +336,12 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				INFOPLIST_FILE = Hifumi/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = net.crazism.Hifumi;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
@@ -341,6 +349,7 @@
 		16A9E3611E65AB4E00A53585 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = KC8N9BMQJY;
@@ -349,6 +358,7 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				INFOPLIST_FILE = Hifumi/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = net.crazism.Hifumi;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -360,6 +370,7 @@
 		16A9E3631E65AB4E00A53585 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				DEVELOPMENT_TEAM = KC8N9BMQJY;
 				INFOPLIST_FILE = HifumiTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
@@ -372,6 +383,7 @@
 		16A9E3641E65AB4E00A53585 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				DEVELOPMENT_TEAM = KC8N9BMQJY;
 				INFOPLIST_FILE = HifumiTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
@@ -400,6 +412,7 @@
 				16A9E3611E65AB4E00A53585 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		16A9E3621E65AB4E00A53585 /* Build configuration list for PBXNativeTarget "HifumiTests" */ = {
 			isa = XCConfigurationList;
@@ -408,6 +421,7 @@
 				16A9E3641E65AB4E00A53585 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
