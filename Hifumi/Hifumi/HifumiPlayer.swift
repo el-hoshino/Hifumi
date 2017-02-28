@@ -44,17 +44,15 @@ public class HifumiPlayer {
 		
 		self.engine.connect(self.node, to: engine.mainMixerNode, format: buffer.format)
 		
+		try self.engine.start()
+		
 	}
 	
 }
 
 extension HifumiPlayer {
 	
-	public func play() throws {
-		
-		if !self.engine.isRunning {
-			try self.engine.start()
-		}
+	public func play() {
 		
 		if !self.node.isPlaying {
 			self.node.play()
