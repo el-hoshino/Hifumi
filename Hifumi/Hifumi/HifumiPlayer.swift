@@ -10,39 +10,60 @@ import AVFoundation
 
 public class HifumiPlayer {
 	
+	public enum PlayMode {
+		case once
+		case loop(range: ClosedRange<Int>?)
+	}
+	
 	fileprivate let engine = AVAudioEngine()
 	fileprivate let node = AVAudioPlayerNode()
 	
-	fileprivate let preBuffer: AVAudioPCMBuffer?
-	fileprivate let mainBuffer: AVAudioPCMBuffer
+	fileprivate let file: AVAudioFile
+	fileprivate let playMode: PlayMode
 	
-	public init(url: URL, loopRange: ClosedRange<Int>? = nil) throws {
+	public init(url: URL, playMode: PlayMode = .once) throws {
 		
 		let file = try AVAudioFile(forReading: url)
+		self.file = file
+		self.playMode = playMode
 		
 		self.engine.attach(self.node)
+		let buffer: AVAudioPCMBuffer
 		
-		if let loopRange = loopRange {
-			let preRange = 0 ..< loopRange.lowerBound
-			let preFrameCount = AVAudioFrameCount(preRange.upperBound)
-			let buffer = AVAudioPCMBuffer(pcmFormat: file.processingFormat, frameCapacity: preFrameCount)
-			try file.read(into: buffer, frameCount: preFrameCount)
+		switch playMode {
+		case .once:
+			let frameCount = AVAudioFrameCount(file.length)
+			buffer = AVAudioPCMBuffer(pcmFormat: file.processingFormat, frameCapacity: frameCount)
+			try file.read(into: buffer, frameCount: frameCount)
 			self.node.scheduleBuffer(buffer, at: nil, options: .interrupts, completionHandler: nil)
-			self.preBuffer = buffer
-			file.framePosition = AVAudioFramePosition(preFrameCount)
 			
-		} else {
-			self.preBuffer = nil
+		case .loop(range: let range):
+			let loopFrameStart: AVAudioFramePosition
+			let loopFrameEnd: AVAudioFramePosition
+			
+			if let loopRange = range {
+				let preRange = 0 ..< loopRange.lowerBound
+				let preFrameCount = AVAudioFrameCount(preRange.upperBound)
+				let preBuffer = AVAudioPCMBuffer(pcmFormat: file.processingFormat, frameCapacity: preFrameCount)
+				try file.read(into: preBuffer, frameCount: preFrameCount)
+				self.node.scheduleBuffer(preBuffer, at: nil, options: .interrupts, completionHandler: nil)
+				loopFrameStart = AVAudioFramePosition(loopRange.lowerBound)
+				loopFrameEnd = AVAudioFramePosition(loopRange.upperBound)
+				
+			} else {
+				loopFrameStart = 0
+				loopFrameEnd = file.length
+			}
+			
+			let loopFrameCount = AVAudioFrameCount(loopFrameEnd - loopFrameStart)
+			buffer = AVAudioPCMBuffer(pcmFormat: file.processingFormat, frameCapacity: loopFrameCount)
+			try file.read(into: buffer, frameCount: loopFrameCount)
+			self.node.scheduleBuffer(buffer, at: nil, options: .loops, completionHandler: nil)
 		}
 		
-		let mainFrameStart = file.framePosition
-		let mainFrameCount = AVAudioFrameCount(file.length - mainFrameStart)
-		let buffer = AVAudioPCMBuffer(pcmFormat: file.processingFormat, frameCapacity: mainFrameCount)
-		try file.read(into: buffer, frameCount: mainFrameCount)
-		self.node.scheduleBuffer(buffer, at: nil, options: .loops, completionHandler: nil)
-		self.mainBuffer = buffer
+		self.engine.connect(self.node, to: self.engine.mainMixerNode, format: buffer.format)
 		
-		self.engine.connect(self.node, to: engine.mainMixerNode, format: buffer.format)
+		try self.engine.start()
 		
 	}
 	
@@ -50,11 +71,7 @@ public class HifumiPlayer {
 
 extension HifumiPlayer {
 	
-	public func play() throws {
-		
-		if !self.engine.isRunning {
-			try self.engine.start()
-		}
+	public func play() {
 		
 		if !self.node.isPlaying {
 			self.node.play()
