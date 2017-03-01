@@ -79,6 +79,19 @@ extension HifumiPlayer {
 
 extension HifumiPlayer {
 	
+	public var volume: Float {
+		get {
+			return self.node.volume
+		}
+		set {
+			self.node.volume = newValue
+		}
+	}
+	
+}
+
+extension HifumiPlayer {
+	
 	public func play() {
 		
 		if !self.node.isPlaying {
