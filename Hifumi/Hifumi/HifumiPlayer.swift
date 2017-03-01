@@ -71,6 +71,14 @@ public class HifumiPlayer {
 
 extension HifumiPlayer {
 	
+	public var isPlaying: Bool {
+		return self.node.isPlaying
+	}
+	
+}
+
+extension HifumiPlayer {
+	
 	public func play() {
 		
 		if !self.node.isPlaying {
