@@ -116,7 +116,19 @@ extension HifumiPlayer {
 
 extension HifumiPlayer {
 	
+	private func validateEngineStatus() throws {
+		
+		if self.engine.isRunning {
+			return
+		}
+		
+		try engine.start()
+		
+	}
+	
 	public func play() {
+		
+		guard (try? self.validateEngineStatus()) != nil else { return }
 		
 		self.prepareToPlay()
 		self.node.play()
