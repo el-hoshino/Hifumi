@@ -12,7 +12,7 @@ public class HifumiPlayer {
 	
 	public enum PlayMode {
 		case once
-		case loop(range: ClosedRange<Int>?)
+		case loop(range: LoopRange)
 	}
 	
 	fileprivate let engine = AVAudioEngine()
@@ -48,28 +48,25 @@ public class HifumiPlayer {
 			self.mainBuffer = buffer
 			
 		case .loop(range: let range):
-			let loopFrameStart: AVAudioFramePosition
-			let loopFrameEnd: AVAudioFramePosition
+			let loopRange = range.range(in: file)
 			
-			if let loopRange = range {
-				let preRange = 0 ..< loopRange.lowerBound
+			switch loopRange.lowerBound {
+			case 0:
+				self.preBuffer = nil
+				
+			default:
+				let preRange: Range<AVAudioFramePosition> = 0 ..< loopRange.lowerBound
 				let preFrameCount = AVAudioFrameCount(preRange.upperBound)
 				guard let preBuffer = AVAudioPCMBuffer(pcmFormat: file.processingFormat,
-				                                       frameCapacity: preFrameCount) else {
+													   frameCapacity: preFrameCount)
+				else {
 					throw Error.failedToCreatePCMBuffer(url: url)
 				}
 				try file.read(into: preBuffer, frameCount: preFrameCount)
-				loopFrameStart = AVAudioFramePosition(loopRange.lowerBound)
-				loopFrameEnd = AVAudioFramePosition(loopRange.upperBound)
 				self.preBuffer = preBuffer
-				
-			} else {
-				loopFrameStart = 0
-				loopFrameEnd = file.length
-				self.preBuffer = nil
 			}
 			
-			let loopFrameCount = AVAudioFrameCount(loopFrameEnd - loopFrameStart)
+			let loopFrameCount = AVAudioFrameCount(loopRange.count)
 			guard let pcmBuffer = AVAudioPCMBuffer(pcmFormat: file.processingFormat,
 			                                       frameCapacity: loopFrameCount) else {
 				throw Error.failedToCreatePCMBuffer(url: url)
