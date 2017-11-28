@@ -11,6 +11,7 @@
 		16A9E35A1E65AB4E00A53585 /* HifumiTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16A9E3591E65AB4E00A53585 /* HifumiTests.swift */; };
 		16A9E35C1E65AB4E00A53585 /* Hifumi.h in Headers */ = {isa = PBXBuildFile; fileRef = 16A9E34E1E65AB4E00A53585 /* Hifumi.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		16A9E3661E65AB9000A53585 /* HifumiPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16A9E3651E65AB9000A53585 /* HifumiPlayer.swift */; };
+		7982D1491FCDCC2400E44FBD /* LoopRange.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7982D1481FCDCC2400E44FBD /* LoopRange.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -31,6 +32,7 @@
 		16A9E3591E65AB4E00A53585 /* HifumiTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HifumiTests.swift; sourceTree = "<group>"; };
 		16A9E35B1E65AB4E00A53585 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		16A9E3651E65AB9000A53585 /* HifumiPlayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HifumiPlayer.swift; sourceTree = "<group>"; };
+		7982D1481FCDCC2400E44FBD /* LoopRange.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoopRange.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -76,6 +78,7 @@
 				16A9E34E1E65AB4E00A53585 /* Hifumi.h */,
 				16A9E34F1E65AB4E00A53585 /* Info.plist */,
 				16A9E3651E65AB9000A53585 /* HifumiPlayer.swift */,
+				7982D1481FCDCC2400E44FBD /* LoopRange.swift */,
 			);
 			path = Hifumi;
 			sourceTree = "<group>";
@@ -204,6 +207,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				16A9E3661E65AB9000A53585 /* HifumiPlayer.swift in Sources */,
+				7982D1491FCDCC2400E44FBD /* LoopRange.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
