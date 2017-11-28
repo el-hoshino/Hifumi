@@ -18,8 +18,7 @@ public class HifumiPlayer {
 	fileprivate let engine = AVAudioEngine()
 	fileprivate let node = AVAudioPlayerNode()
 	
-	fileprivate let preBuffer: AVAudioPCMBuffer?
-	fileprivate let mainBuffer: AVAudioPCMBuffer
+	fileprivate let buffer: Buffer
 	
 	let playMode: PlayMode
 	
@@ -29,52 +28,9 @@ public class HifumiPlayer {
 		self.playMode = playMode
 		
 		self.engine.attach(self.node)
-		let buffer: AVAudioPCMBuffer
 		
-		enum Error: Swift.Error {
-			case failedToCreatePCMBuffer(url: URL)
-		}
-		
-		switch playMode {
-		case .once:
-			let frameCount = AVAudioFrameCount(file.length)
-			guard let pcmBuffer = AVAudioPCMBuffer(pcmFormat: file.processingFormat,
-			                                       frameCapacity: frameCount) else {
-				throw Error.failedToCreatePCMBuffer(url: url)
-			}
-			buffer = pcmBuffer
-			try file.read(into: buffer, frameCount: frameCount)
-			self.preBuffer = nil
-			self.mainBuffer = buffer
-			
-		case .loop(range: let range):
-			let loopRange = range.range(in: file)
-			
-			switch loopRange.lowerBound {
-			case 0:
-				self.preBuffer = nil
-				
-			default:
-				let preRange: Range<AVAudioFramePosition> = 0 ..< loopRange.lowerBound
-				let preFrameCount = AVAudioFrameCount(preRange.upperBound)
-				guard let preBuffer = AVAudioPCMBuffer(pcmFormat: file.processingFormat,
-													   frameCapacity: preFrameCount)
-				else {
-					throw Error.failedToCreatePCMBuffer(url: url)
-				}
-				try file.read(into: preBuffer, frameCount: preFrameCount)
-				self.preBuffer = preBuffer
-			}
-			
-			let loopFrameCount = AVAudioFrameCount(loopRange.count)
-			guard let pcmBuffer = AVAudioPCMBuffer(pcmFormat: file.processingFormat,
-			                                       frameCapacity: loopFrameCount) else {
-				throw Error.failedToCreatePCMBuffer(url: url)
-			}
-			buffer = pcmBuffer
-			try file.read(into: buffer, frameCount: loopFrameCount)
-			self.mainBuffer = buffer
-		}
+		let buffer = try Buffer(file: file, playMode: playMode)
+		self.buffer = buffer
 		
 		self.engine.connect(self.node, to: self.engine.mainMixerNode, format: buffer.format)
 		
@@ -111,16 +67,7 @@ extension HifumiPlayer {
 		
 		self.node.stop()
 		
-		switch self.playMode {
-		case .once:
-			self.node.scheduleBuffer(self.mainBuffer, at: nil, options: .interrupts, completionHandler: nil)
-			
-		case .loop:
-			if let preBuffer = self.preBuffer {
-				self.node.scheduleBuffer(preBuffer, at: nil, options: .interrupts, completionHandler: nil)
-			}
-			self.node.scheduleBuffer(self.mainBuffer, at: nil, options: .loops, completionHandler: nil)
-		}
+		self.node.scheduleBuffer(self.buffer)
 		
 	}
 	
