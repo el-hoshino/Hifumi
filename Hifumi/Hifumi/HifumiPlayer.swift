@@ -12,7 +12,7 @@ public class HifumiPlayer {
 	
 	public enum PlayMode {
 		case once
-		case loop(range: ClosedRange<Int>?)
+		case loop(range: LoopRange)
 	}
 	
 	fileprivate let engine = AVAudioEngine()
@@ -31,35 +31,47 @@ public class HifumiPlayer {
 		self.engine.attach(self.node)
 		let buffer: AVAudioPCMBuffer
 		
+		enum Error: Swift.Error {
+			case failedToCreatePCMBuffer(url: URL)
+		}
+		
 		switch playMode {
 		case .once:
 			let frameCount = AVAudioFrameCount(file.length)
-			buffer = AVAudioPCMBuffer(pcmFormat: file.processingFormat, frameCapacity: frameCount)
+			guard let pcmBuffer = AVAudioPCMBuffer(pcmFormat: file.processingFormat,
+			                                       frameCapacity: frameCount) else {
+				throw Error.failedToCreatePCMBuffer(url: url)
+			}
+			buffer = pcmBuffer
 			try file.read(into: buffer, frameCount: frameCount)
 			self.preBuffer = nil
 			self.mainBuffer = buffer
 			
 		case .loop(range: let range):
-			let loopFrameStart: AVAudioFramePosition
-			let loopFrameEnd: AVAudioFramePosition
+			let loopRange = range.range(in: file)
 			
-			if let loopRange = range {
-				let preRange = 0 ..< loopRange.lowerBound
-				let preFrameCount = AVAudioFrameCount(preRange.upperBound)
-				let preBuffer = AVAudioPCMBuffer(pcmFormat: file.processingFormat, frameCapacity: preFrameCount)
-				try file.read(into: preBuffer, frameCount: preFrameCount)
-				loopFrameStart = AVAudioFramePosition(loopRange.lowerBound)
-				loopFrameEnd = AVAudioFramePosition(loopRange.upperBound)
-				self.preBuffer = preBuffer
-				
-			} else {
-				loopFrameStart = 0
-				loopFrameEnd = file.length
+			switch loopRange.lowerBound {
+			case 0:
 				self.preBuffer = nil
+				
+			default:
+				let preRange: Range<AVAudioFramePosition> = 0 ..< loopRange.lowerBound
+				let preFrameCount = AVAudioFrameCount(preRange.upperBound)
+				guard let preBuffer = AVAudioPCMBuffer(pcmFormat: file.processingFormat,
+													   frameCapacity: preFrameCount)
+				else {
+					throw Error.failedToCreatePCMBuffer(url: url)
+				}
+				try file.read(into: preBuffer, frameCount: preFrameCount)
+				self.preBuffer = preBuffer
 			}
 			
-			let loopFrameCount = AVAudioFrameCount(loopFrameEnd - loopFrameStart)
-			buffer = AVAudioPCMBuffer(pcmFormat: file.processingFormat, frameCapacity: loopFrameCount)
+			let loopFrameCount = AVAudioFrameCount(loopRange.count)
+			guard let pcmBuffer = AVAudioPCMBuffer(pcmFormat: file.processingFormat,
+			                                       frameCapacity: loopFrameCount) else {
+				throw Error.failedToCreatePCMBuffer(url: url)
+			}
+			buffer = pcmBuffer
 			try file.read(into: buffer, frameCount: loopFrameCount)
 			self.mainBuffer = buffer
 		}
