@@ -16,9 +16,11 @@ extension HifumiPlayer {
 		
 		case all
 		case from(start: Bound)
-		case through(last: Bound)
 		case upTo(end: Bound)
 		case within(start: Bound, end: Bound)
+		
+		@available(*, deprecated)
+		case through(last: Bound)
 		
 	}
 	
@@ -35,14 +37,14 @@ extension HifumiPlayer.LoopRange {
 		case .from(start: let start):
 			return element >= start
 			
-		case .through(last: let last):
-			return element <= last
-			
 		case .upTo(end: let end):
 			return element < end
 			
 		case .within(start: let start, end: let end):
 			return (start ..< end).contains(element)
+			
+		case .through(last: let last):
+			return element <= last
 		}
 		
 	}
@@ -56,14 +58,14 @@ extension HifumiPlayer.LoopRange {
 		case .from(start: let start):
 			return max(start, collection.startIndex) ..< collection.endIndex
 			
-		case .through(last: let last):
-			return collection.startIndex ..< min(last.advanced(by: 1), collection.endIndex)
-			
 		case .upTo(end: let end):
 			return collection.startIndex ..< min(end, collection.endIndex)
 			
 		case .within(start: let start, end: let end):
 			return max(start, collection.startIndex) ..< min(end, collection.endIndex)
+			
+		case .through(last: let last):
+			return collection.startIndex ..< min(last.advanced(by: 1), collection.endIndex)
 		}
 		
 	}
@@ -86,18 +88,21 @@ public func ..< (lhs: AVAudioFramePosition, rhs: AVAudioFramePosition) -> Hifumi
 	return .within(start: lhs, end: rhs)
 }
 
-public func ... (lhs: AVAudioFramePosition, rhs: AVAudioFramePosition) -> HifumiPlayer.LoopRange {
-	return .within(start: lhs, end: rhs.advanced(by: 1))
-}
-
 public prefix func ..< (rhs: AVAudioFramePosition) -> HifumiPlayer.LoopRange {
 	return .upTo(end: rhs)
 }
 
-public prefix func ... (rhs: AVAudioFramePosition) -> HifumiPlayer.LoopRange {
-	return .through(last: rhs)
-}
-
 public postfix func ... (lhs: AVAudioFramePosition) -> HifumiPlayer.LoopRange {
 	return .from(start: lhs)
+}
+
+
+@available(*, deprecated)
+public func ... (lhs: AVAudioFramePosition, rhs: AVAudioFramePosition) -> HifumiPlayer.LoopRange {
+	return .within(start: lhs, end: rhs.advanced(by: 1))
+}
+
+@available(*, deprecated)
+public prefix func ... (rhs: AVAudioFramePosition) -> HifumiPlayer.LoopRange {
+	return .through(last: rhs)
 }
