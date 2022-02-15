@@ -49,7 +49,7 @@ extension HifumiPlayer.LoopRange {
 		
 	}
 	
-	public func relative<C>(to collection: C) -> Range<AVAudioFramePosition> where C : _Indexable, HifumiPlayer.LoopRange.Bound == C.Index {
+	public func relative<C>(to collection: C) -> Range<AVAudioFramePosition> where C : Collection, HifumiPlayer.LoopRange.Bound == C.Index {
 		
 		switch self {
 		case .all:
